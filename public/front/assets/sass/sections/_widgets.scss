@@ -1,0 +1,127 @@
+/*---------------------------------------------------
+	widget styles
+----------------------------------------------------*/
+.footer-widget {
+	margin-bottom: 55px;
+	margin-top: 74px;
+	.logo {
+		margin-bottom: 19px;
+    	display: block;
+	}
+	p {
+		color: #1C1A1A;
+		font-size: 18px;
+		font-weight: 400;
+	}
+}
+.widget {
+	.widget-title {
+		margin-bottom: 34px;
+		color: #F7AC06;
+		font-size: 20px;
+		font-weight: 700;
+	}
+}
+.widget_address {
+	margin-top: 0;
+	.widget-title {
+		color: #05056B;
+		margin-bottom: 16px;
+	}
+}
+.widget_post {
+	.media {
+		margin-bottom: 21px;
+		.media-left {
+			height: 50px;
+			width: 50px;
+			background: #05056B;
+			padding-top: 3px;
+			h5 {
+				font-size: 20px;
+				font-weight: 400;
+				color: #ffffff;
+				margin-bottom: 0;
+			}
+			h6 {
+				color: #ffffff;
+				font-size: 12px;
+				font-weight: 400;
+				margin-bottom: 0;
+			}
+		}
+		.media-body {
+			margin-left: 15px;
+			a {
+				color: #141414;
+				font-weight: 400;
+				font-size: 18px;
+			}
+		}
+	}
+}
+.widget_link {
+	ul {
+		padding: 0;
+		margin: 0;
+		li {
+			list-style: none;
+			margin-bottom: 9px;
+			a {
+				color: #090909;
+				font-size: 18px;
+				display: block;
+				i {
+					color: #F7AC06;
+					margin-right: 7px;
+					margin-left: -8px;
+				}
+				&:hover {
+					margin-left: 5px;
+					color: var(--main-color);
+				}
+			}
+		}
+	}
+}
+.widget_contact {
+	p {
+		margin-bottom: 27px;
+	}
+	.single-search-wrap {
+        background: transparent;
+        position: relative;
+        box-shadow: 0 3px 6px rgba(0,0,0,0.23);
+        border-radius: 16px;
+        height: 85px;
+    	line-height: 85px;
+        input {
+            background: rgba(254, 254, 251, 0.23);
+            border-radius: 16px;
+            border: 0;
+            font-size: 18px;
+            color: #4E4B4B;
+            width: 100%;
+            padding: 0 80px 0 20px;
+            &::placeholder {
+                color: #4E4B4B;
+            }
+        }
+        button {
+            position: absolute;
+            right: 17px;
+            top: 50%;
+            margin-top: -26px;
+            border: 0;
+            height: 50px;
+            border-radius: 5px;
+            width: 60px;
+            background: #F7AC06;
+            cursor: pointer;
+            img {
+            	margin-top: -47px;
+    			margin-left: 5px;
+            }
+        }
+    }
+}

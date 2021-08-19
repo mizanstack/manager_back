@@ -1,0 +1,9 @@
+.setting-box{}
+.settings-content{}
+
+.settings-content .nav-tabs>li {
+	float: none;
+	width:100%;
+	display: block;
+	border-bottom: 1px solid #ccc;
+}
