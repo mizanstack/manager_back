@@ -16,6 +16,10 @@ use Illuminate\Http\Request;
 
 Route::group(['prefix' => ''], function () {
 	Route::get('get-directories', 'Api\DirectoryAPIController@get_directories');
+	Route::get('open-directory/{id}', 'Api\DirectoryAPIController@open_directory');
+
+
+	Route::post('save-folder', 'Api\DirectoryAPIController@save_folder');
 
     Route::resource('directories', 'Api\DirectoryAPIController');
     Route::resource('media', 'Api\MediaAPIController');

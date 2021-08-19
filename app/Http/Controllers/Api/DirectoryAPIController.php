@@ -8,6 +8,7 @@ use App\Models\Directory;
 use Illuminate\Http\Request;
 use App\Http\Controllers\AppBaseController;
 use Response;
+use App\Http\Resources\DirectoryResource;
 
 /**
  * Class DirectoryController
@@ -35,12 +36,52 @@ class DirectoryAPIController extends AppBaseController
         } else {
             $query->where('parent_id', null);
         }
-        
 
         $directories = $query->get();
 
         return $this->sendResponse($directories->toArray(), 'Directories retrieved successfully');
     }
+
+
+    /**
+     * open a listing of the Directory.
+     * GET|HEAD /directories
+     *
+     * @param Request $request
+     * @return Response
+     */
+    public function open_directory($id, Request $request)
+    {
+        $current_directory = \App\Models\Directory::find($id);
+
+        $directories = \App\Models\Directory::where('parent_id', $id)->paginate(10);
+
+        return DirectoryResource::collection($directories)->additional(['current_directory' => $current_directory]);
+    }
+
+    /**
+     * Store a newly created Directory in storage.
+     * POST /directories
+     *
+     * @param CreateSaveFolderAPIRequest $request
+     *
+     * @return Response
+     */
+
+
+    public function save_folder(CreateDirectoryAPIRequest $request)
+    {
+        $input = $request->all();
+        $directory = new Directory;
+        $directory->parent_id = $request->parentId;
+        $directory->name = $request->name;
+        $directory->slug = \Illuminate\Support\Str::slug($request->name);
+        $directory->save();
+
+        return $this->sendResponse($directory->toArray(), 'Directory saved successfully');
+    }
+
+    
 
 
     /**

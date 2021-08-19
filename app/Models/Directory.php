@@ -17,10 +17,6 @@ class Directory extends Model
 {
 
     public $table = 'directories';
-    
-
-
-
 
     public $upload_path = 'uploads/directories';
 
@@ -54,7 +50,6 @@ class Directory extends Model
      */
     public static $rules = [
         'name' => 'required',
-        'slug' => 'required'
     ];
 
     
