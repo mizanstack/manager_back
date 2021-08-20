@@ -9,6 +9,8 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\AppBaseController;
 use Response;
 use App\Http\Resources\DirectoryResource;
+use App\Http\Resources\MediaResource;
+use DB;
 
 /**
  * Class DirectoryController
@@ -17,9 +19,6 @@ use App\Http\Resources\DirectoryResource;
 
 class DirectoryAPIController extends AppBaseController
 {
-
-    
-
     /**
      * Display a listing of the Directory.
      * GET|HEAD /directories
@@ -53,10 +52,15 @@ class DirectoryAPIController extends AppBaseController
     public function open_directory($id, Request $request)
     {
         $current_directory = \App\Models\Directory::find($id);
+        $directories = \App\Models\Directory::where('parent_id', $id)->get();
 
-        $directories = \App\Models\Directory::where('parent_id', $id)->paginate(10);
+        $medias = \App\Models\Media::where('directory_id', $id)->latest()->get();
+        $directory_medias = MediaResource::collection($medias);
 
-        return DirectoryResource::collection($directories)->additional(['current_directory' => $current_directory]);
+        return DirectoryResource::collection($directories)->additional([
+            'current_directory' => $current_directory,
+            'medias' => $directory_medias
+        ]);
     }
 
     /**
@@ -80,6 +84,40 @@ class DirectoryAPIController extends AppBaseController
 
         return $this->sendResponse($directory->toArray(), 'Directory saved successfully');
     }
+
+
+    /**
+     * update a created Directory in storage.
+     * POST /directories
+     *
+     * @param UpdateFolderAPIRequest $request
+     *
+     * @return Response
+     */
+
+
+    public function update_folder($id, CreateDirectoryAPIRequest $request)
+    {
+        $input = $request->all();
+        $directory = Directory::find($id);
+
+        if($directory){
+            $directory->name = $request->name;
+            $directory->slug = \Illuminate\Support\Str::slug($request->name);
+            $directory->save();
+
+            return $this->sendResponse($directory->toArray(), 'Directory saved successfully'); 
+        }
+
+
+         return $this->sendError('Directory not found');
+        
+    }
+
+
+
+
+    
 
     
 
@@ -181,15 +219,28 @@ class DirectoryAPIController extends AppBaseController
      */
     public function destroy($id)
     {
-        /** @var Directory $directory */
-        $directory = Directory::find($id);
+        
+        DB::beginTransaction();
 
-        if (empty($directory)) {
-            return $this->sendError('Directory not found');
+        try {
+
+            $directory = Directory::find($id);
+
+            if (empty($directory)) {
+                return $this->sendError('Directory not found');
+            }
+            // all sub folder delete need to update
+            // $directory_medias = \App\Model\Media::where('directory_id', $id)->delete();
+            $directory->delete();
+            DB::commit();
+            return $this->sendSuccess('Directory deleted successfully');
+
+
+        } catch (\Throwable $e) {
+            DB::rollback();
         }
 
-        $directory->delete();
 
-        return $this->sendSuccess('Directory deleted successfully');
+        
     }
 }

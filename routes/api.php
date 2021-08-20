@@ -20,7 +20,12 @@ Route::group(['prefix' => ''], function () {
 
 
 	Route::post('save-folder', 'Api\DirectoryAPIController@save_folder');
+	Route::post('update-folder/{id}', 'Api\DirectoryAPIController@update_folder');
+	Route::post('delete-folder/{id}', 'Api\DirectoryAPIController@destroy');
 
-    Route::resource('directories', 'Api\DirectoryAPIController');
-    Route::resource('media', 'Api\MediaAPIController');
+
+	Route::post('upload-files', 'Api\MediaAPIController@upload_files');
+
+    // Route::resource('directories', 'Api\DirectoryAPIController');
+    // Route::resource('media', 'Api\MediaAPIController');
 });

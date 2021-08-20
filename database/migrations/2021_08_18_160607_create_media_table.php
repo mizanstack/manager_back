@@ -17,6 +17,7 @@ class CreateMediaTable extends Migration
             $table->increments('id');
             $table->integer('directory_id')->nullable();
             $table->string('name')->nullable();
+            $table->text('attachment')->nullable();
             $table->timestamps();
         });
     }

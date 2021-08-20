@@ -16,10 +16,6 @@ class Media extends Model
 {
 
     public $table = 'media';
-    
-
-
-
 
     public $upload_path = 'uploads/media';
 
@@ -40,7 +36,8 @@ class Media extends Model
     protected $casts = [
         'id' => 'integer',
         'directory_id' => 'integer',
-        'name' => 'string'
+        'name' => 'string',
+        'attachment' => 'text'
     ];
 
     /**
