@@ -71,6 +71,20 @@ class Directory extends Model
         }
     }
 
+
+     public static function childrenDelete($id){
+        $childrenObj = self::where('parent_id', $id);
+        $childrenObjData = $childrenObj->get();
+        if($childrenObj->count()){
+            foreach ($childrenObjData as $child) {
+                $child->delete();
+                self::childrenDelete($child->id);
+                \App\Models\Media::childrenDelete($child->id);
+            }
+        }
+    }
+
+
     public static function getNestedCategories(){
         $source = self::all();
         return self::nestedCategories($source);

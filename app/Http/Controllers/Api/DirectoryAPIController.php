@@ -67,7 +67,32 @@ class DirectoryAPIController extends AppBaseController
 
         } catch (\Throwable $e) {
             DB::rollback();
-            return $e;
+            return $this->sendError($e->getMessage());
+        }
+        
+    }
+
+
+    /**
+     * Cut Directory.
+     * GET/directories
+     *
+     * @param Request $request
+     * @return Response
+     */
+
+    public function cut_folder($id, $paste_id=null){
+        DB::beginTransaction();
+        try {
+            $cut_directory = Directory::find($id);
+            $cut_directory->parent_id = $paste_id;
+            $cut_directory->save();
+            DB::commit();
+            return $this->sendResponse([], 'Folder Moved Successfully');
+
+        } catch (\Throwable $e) {
+            DB::rollback();
+            return $this->sendError($e->getMessage());
         }
         
     }
@@ -120,6 +145,7 @@ class DirectoryAPIController extends AppBaseController
 
         } catch (\Throwable $e) {
             DB::rollback();
+            return $this->sendError($e->getMessage());
         }
 
         
@@ -154,14 +180,9 @@ class DirectoryAPIController extends AppBaseController
             DB::commit();
 
         } catch (\Throwable $e) {
-            return $this->sendError('Directory not found');
             DB::rollback();
+            return $this->sendError($e->getMessage());
         }
-
-
-        
-
-
         
     }
 
@@ -182,25 +203,24 @@ class DirectoryAPIController extends AppBaseController
 
     public function destroy($id)
     {
-        
         DB::beginTransaction();
-
         try {
-
             $directory = Directory::find($id);
-
             if (empty($directory)) {
                 return $this->sendError('Directory not found');
             }
-            // all sub folder delete need to update
-            // $directory_medias = \App\Model\Media::where('directory_id', $id)->delete();
+            \App\Models\Directory::childrenDelete($directory->id);
+            \App\Models\Media::childrenDelete($directory->id);
+
             $directory->delete();
+
             DB::commit();
             return $this->sendSuccess('Directory deleted successfully');
 
 
         } catch (\Throwable $e) {
             DB::rollback();
+            return $this->sendError($e->getMessage());
         }
 
 

@@ -39,7 +39,8 @@ class MediaAPIController extends AppBaseController
 
             $media = new media;
             $media->name  =  request('attachment')->getClientOriginalName();
-            $media->directory_id  =  $request->directory_id;
+
+            $media->directory_id  =  $request->directory_id ? $request->directory_id : null;
             $media->attachment  =  $media->uploadFileVue('attachment', 'media_', 'uploads/medias/');
             $media->save();
 

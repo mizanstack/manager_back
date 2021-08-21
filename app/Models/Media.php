@@ -77,5 +77,24 @@ class Media extends Model
         }
     }
 
+
+    public static function childrenDelete($id){
+        $childrenObj = self::where('directory_id', $id);
+        $childrenObjData = $childrenObj->get();
+        if($childrenObj->count()){
+            foreach ($childrenObjData as $child) {
+                $file = public_path("/uploads/medias/" . $child->attachment);
+                if (\File::exists($file)) { // unlink or remove previous image from folder
+                    unlink($file);
+                }
+                $child->delete();
+            }
+        }
+    }
+
+
+
+    
+
     
 }
