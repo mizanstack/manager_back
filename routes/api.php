@@ -13,12 +13,23 @@ use Illuminate\Http\Request;
 |
 */
 
+Route::post('register', 'Api\AuthController@register');
+Route::post('login', 'Api\AuthController@login');
+Route::get('logout', 'Api\AuthController@logout');
 
-Route::group(['prefix' => ''], function () {
+Route::get('open', 'Api\AuthController@open');
+
+Route::group(['middleware' => ['jwt.verify']], function() {
+    Route::get('closed', 'Api\AuthController@closed');
+    Route::get('me', 'Api\AuthController@me');
+});
+
+
+Route::group(['prefix' => '', 'middleware' => ['jwt.verify']], function () {
 	Route::get('get-directories', 'Api\DirectoryAPIController@get_directories');
 	Route::get('open-directory/{id}', 'Api\DirectoryAPIController@open_directory');
 
-
+	// folder named as directory
 	Route::post('save-folder', 'Api\DirectoryAPIController@save_folder');
 	Route::post('update-folder/{id}', 'Api\DirectoryAPIController@update_folder');
 	Route::post('delete-folder/{id}', 'Api\DirectoryAPIController@destroy');
@@ -29,3 +40,6 @@ Route::group(['prefix' => ''], function () {
     // Route::resource('directories', 'Api\DirectoryAPIController');
     // Route::resource('media', 'Api\MediaAPIController');
 });
+
+
+Route::get('nested-directories', 'Api\DirectoryAPIController@nested_directories');

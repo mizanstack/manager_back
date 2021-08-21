@@ -9,8 +9,9 @@ use Spatie\Permission\Traits\HasRoles;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Carbon;
+use Tymon\JWTAuth\Contracts\JWTSubject;
 
-class User extends Authenticatable
+class User extends Authenticatable implements JWTSubject
 {
     use Notifiable, ImageTrait;
     use ImageTrait {
@@ -58,94 +59,6 @@ class User extends Authenticatable
         'image_path'      => 'string',
     ];
 
-    public static function get_logged_student_id(){
-        $student = \App\Models\Student::where('user_id', auth()->user()->id)->first();
-        return $student ? $student->id : null;
-    }
-
-    public static function get_logged_student(){
-        $logged_student_id = self::get_logged_student_id();
-        $student = \App\Models\Student::find($logged_student_id);
-        return $student ? $student : null;
-    }
-
-    public static function get_logged_teacher_id(){
-        $teacher = \App\Models\Teacher::where('user_id', auth()->user()->id)->first();
-        return $teacher ? $teacher->id : null;
-    }
-
-    public static function get_logged_teacher(){
-        $logged_teacher_id = self::get_logged_teacher_id();
-        $teacher = \App\Models\Teacher::find($logged_teacher_id);
-        return $teacher ? $teacher : null;
-    }
-
-    public static function is_logged_user_student(){
-        if(auth()->user()->hasRole('Student')){
-            return true;
-        }
-        return false;
-
-    }
-
-    public static function is_logged_user_teacher(){
-        if(auth()->user()->hasRole('Teacher')){
-            return true;
-        }
-        return false;
-
-    }
-
-    public static function is_student_and_premium(){
-        if(self::is_logged_user_student()){
-            if(is_logged_student_premium()){
-                return true;
-            }
-        }
-        return false;
-    }
-
-    public static function own_teacher_id_restriction($teacher_id){
-        if(is_logged_user_teacher()){
-            if((int) get_logged_teacher()->id !== (int) $teacher_id){
-                dd('This Profile is not yours');
-            }
-        }
-    }
-
-    public static function own_student_id_restriction($student_id){
-        if(is_logged_user_student()){
-            if((int) get_logged_student()->id !== (int) $student_id){
-                dd('This Profile is not yours');
-            }
-        }
-    }
-    
-
-
-
-    /**
-     * Validation rules.
-     *
-     * @var array
-     */
-    // public static $rules = [
-    //     'name'                  => 'required|unique:users,name',
-    //     'email'                 => 'required|email|unique:users,email|regex:/^[\w\-\.\+]+\@[a-zA-Z0-9\.\-]+\.[a-zA-z0-9]{2,4}$/',
-    //     'phone'                 => 'nullable|numeric|digits:10',
-    //     'password'              => 'nullable|min:6',
-    // ];
-
-    // public static $messages = [
-    //     'phone.digits'     => 'The phone number must be 10 digits long.',
-    //     'email.regex'      => 'Please enter valid email.',
-    //     'photo.mimes'      => 'The profile image must be a file of type: jpeg, jpg, png.',
-    // ];
-
-    // public static $setPasswordRules = [
-    //     'user_id'               => 'required',
-    //     'password'              => 'min:6',
-    // ];
 
     public static $rules = [
         'name' => 'required',
@@ -194,4 +107,22 @@ class User extends Authenticatable
 
         return $this->traitDeleteImage(self::IMAGE_PATH.DIRECTORY_SEPARATOR.$image);
     }
+
+    /**
+     * Get the identifier that will be stored in the subject claim of the JWT.
+     *
+     * @return mixed
+     */
+    public function getJWTIdentifier() {
+        return $this->getKey();
+    }
+
+    /**
+     * Return a key value array, containing any custom claims to be added to the JWT.
+     *
+     * @return array
+     */
+    public function getJWTCustomClaims() {
+        return [];
+    } 
 }

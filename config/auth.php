@@ -48,7 +48,7 @@ return [
         // ],
         'api' => [
             'driver' => 'jwt',
-            'provider' => 'students',
+            'provider' => 'users',
             // 'hash' => false,
         ],
     ],
@@ -75,10 +75,7 @@ return [
             'driver' => 'eloquent',
             'model'  => App\User::class,
         ],
-        'students' => [
-            'driver' => 'eloquent',
-            'model'  => App\Models\Student::class,
-        ],
+        
 
         // 'users' => [
         //     'driver' => 'database',
