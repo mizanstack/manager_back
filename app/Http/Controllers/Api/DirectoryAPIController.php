@@ -43,6 +43,25 @@ class DirectoryAPIController extends AppBaseController
 
 
     /**
+     * Copy Directory.
+     * GET/directories
+     *
+     * @param Request $request
+     * @return Response
+     */
+
+    public function copy_folder($id, $paste_id=null){
+        $copy_directory = Directory::find($id)->toArray();
+
+        $paste_directory = new Directory;
+        $copy_directory['name'] = $copy_directory['name'] . ' Copy';
+        $copy_directory['parent_id'] = $paste_id ? $paste_id : null;
+        $paste_directory->create($copy_directory);
+        return $paste_directory;
+    }
+
+
+    /**
      * open a listing of the Directory.
      * GET|HEAD /directories
      *

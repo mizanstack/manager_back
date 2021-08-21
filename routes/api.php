@@ -43,3 +43,6 @@ Route::group(['prefix' => '', 'middleware' => ['jwt.verify']], function () {
 
 
 Route::get('nested-directories', 'Api\DirectoryAPIController@nested_directories');
+
+
+Route::get('copy-folder/{id}/{paste_id?}', 'Api\DirectoryAPIController@copy_folder');
