@@ -52,6 +52,25 @@ class Directory extends Model
         'name' => 'required',
     ];
 
+    public static function childrenCopy($id, $created_parent_id){
+        $childrenObj = self::where('parent_id', $id);
+        $childrenObjData = $childrenObj->get();
+        if($childrenObj->count()){
+            foreach ($childrenObjData as $child) {
+
+                $copyAsParent = new \App\Models\Directory;
+                $copyAsParent->parent_id = $created_parent_id;
+                $copyAsParent->name = $child->name;
+                $copyAsParent->slug = \Illuminate\Support\Str::slug($child->name);
+                $copyAsParent->save();
+
+                self::childrenCopy($child->id, $copyAsParent->id);
+                \App\Models\Media::childrenCopy($child->id, $copyAsParent->id);
+
+            }
+        }
+    }
+
     public static function getNestedCategories(){
         $source = self::all();
         return self::nestedCategories($source);

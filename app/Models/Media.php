@@ -50,5 +50,32 @@ class Media extends Model
         'name' => 'required'
     ];
 
+    public static function childrenCopy($id, $new_directory_parent_id){
+        $childrenObj = self::where('directory_id', $id);
+        $childrenObjData = $childrenObj->get();
+        if($childrenObj->count()){
+            foreach ($childrenObjData as $child) {
+
+                $copyAsParent = new \App\Models\Media;
+                $copyAsParent->directory_id = $new_directory_parent_id;
+                $copyAsParent->name = $child->name;
+
+
+                $copyied_file_name = removeExt($child->attachment) . '_copy' . '.' . takeExt($child->attachment);
+
+
+                $file = public_path("/uploads/medias/" . $child->attachment);
+                $destination = public_path("/uploads/medias/". $copyied_file_name);
+                \File::copy($file,$destination);
+
+                $copyAsParent->attachment = $copyied_file_name;
+                $copyAsParent->save();
+
+                // self::childrenCopy($child->id, $copyAsParent->id);
+
+            }
+        }
+    }
+
     
 }

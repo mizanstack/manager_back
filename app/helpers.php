@@ -25,4 +25,18 @@ function remove_space_dots_replace_hyphen($string){
 function formated_date($date){
 	return \Carbon\Carbon::parse($date)->toFormattedDateString();
 }
+
+function removeExt($path)
+{
+    $basename = basename($path);
+    return strpos($basename, '.') === false ? $path : substr($path, 0, - strlen($basename) + strlen(explode('.', $basename)[0]));
+}
+
+function takeExt($path){
+	// dd($path);
+	$array = explode(".", $path);
+	return end($array);
+
+}
+
 ?>

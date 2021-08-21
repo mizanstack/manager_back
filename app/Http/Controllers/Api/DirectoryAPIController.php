@@ -51,13 +51,25 @@ class DirectoryAPIController extends AppBaseController
      */
 
     public function copy_folder($id, $paste_id=null){
-        $copy_directory = Directory::find($id)->toArray();
+        DB::beginTransaction();
+        try {
+            $copy_directory = Directory::find($id)->toArray();
 
-        $paste_directory = new Directory;
-        $copy_directory['name'] = $copy_directory['name'] . ' Copy';
-        $copy_directory['parent_id'] = $paste_id ? $paste_id : null;
-        $paste_directory->create($copy_directory);
-        return $paste_directory;
+            $paste_directory = new Directory;
+            $copy_directory['name'] = $copy_directory['parent_id'] ? $copy_directory['name'] : $copy_directory['name'] . ' Copy';
+            $copy_directory['parent_id'] = $paste_id ? $paste_id : null;
+            $created = $paste_directory->create($copy_directory);
+
+            \App\Models\Directory::childrenCopy($id, $created->id);
+            \App\Models\Media::childrenCopy($id, $created->id);
+            DB::commit();
+            return $this->sendResponse([], 'Copy Folder Successfully');
+
+        } catch (\Throwable $e) {
+            DB::rollback();
+            return $e;
+        }
+        
     }
 
 
@@ -94,14 +106,24 @@ class DirectoryAPIController extends AppBaseController
 
     public function save_folder(CreateDirectoryAPIRequest $request)
     {
-        $input = $request->all();
-        $directory = new Directory;
-        $directory->parent_id = $request->parentId;
-        $directory->name = $request->name;
-        $directory->slug = \Illuminate\Support\Str::slug($request->name);
-        $directory->save();
+        DB::beginTransaction();
+        try {
+            $input = $request->all();
+            $directory = new Directory;
+            $directory->parent_id = $request->parentId;
+            $directory->name = $request->name;
+            $directory->slug = \Illuminate\Support\Str::slug($request->name);
+            $directory->save();
+            DB::commit();
 
-        return $this->sendResponse($directory->toArray(), 'Directory saved successfully');
+            return $this->sendResponse($directory->toArray(), 'Directory saved successfully');
+
+        } catch (\Throwable $e) {
+            DB::rollback();
+        }
+
+        
+
     }
 
 
@@ -117,19 +139,29 @@ class DirectoryAPIController extends AppBaseController
 
     public function update_folder($id, CreateDirectoryAPIRequest $request)
     {
-        $input = $request->all();
-        $directory = Directory::find($id);
 
-        if($directory){
-            $directory->name = $request->name;
-            $directory->slug = \Illuminate\Support\Str::slug($request->name);
-            $directory->save();
+        DB::beginTransaction();
+        try {
+            $input = $request->all();
+            $directory = Directory::find($id);
 
+            if($directory){
+                $directory->name = $request->name;
+                $directory->slug = \Illuminate\Support\Str::slug($request->name);
+                $directory->save();
+            }
             return $this->sendResponse($directory->toArray(), 'Directory saved successfully'); 
+            DB::commit();
+
+        } catch (\Throwable $e) {
+            return $this->sendError('Directory not found');
+            DB::rollback();
         }
 
 
-         return $this->sendError('Directory not found');
+        
+
+
         
     }
 
