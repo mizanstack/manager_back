@@ -26,7 +26,7 @@ class MediaAPIController extends AppBaseController
 
            
             // 'name' => 'required',
-            'attachment'  => 'required|mimes:jpeg,png,pdf|max:2000048',
+            'attachment'  => 'required|mimes:'.env('FILE_UPLOAD_SUPPORT_TYPE').'|max:2000',
             // 'name.*.files'    => 'required|mimes:jpeg,png,pdf|max:2048',
        ],
        [

@@ -44,7 +44,10 @@ class Model extends Eloquent
             $extension = $has_profile_photo->getClientOriginalExtension(); // getting image extension
             $filename =  remove_space_dots_replace_underscore($save_title) . '_' . time() . mt_rand(1000, 9999) . '.'.$extension;
 
-            \Image::make($has_profile_photo)->save(public_path($path).$filename);
+            // \Image::make($has_profile_photo)->save(public_path($path).$filename);
+
+            request($field_or_field_with_request)->move(public_path($path), $filename);
+
             return $filename;
         }
         return null;

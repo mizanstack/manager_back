@@ -1,4 +1,12 @@
 <?php
+
+function ext_type_image_or_other($ext){
+	$image_type_array = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
+	if(in_array($ext, $image_type_array)){
+		return 'image';
+	}
+	return 'other';
+}
 function remove_dots($string){
 	return str_replace(".", "", $string);
 }

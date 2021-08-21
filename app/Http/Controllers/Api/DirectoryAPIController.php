@@ -36,6 +36,8 @@ class DirectoryAPIController extends AppBaseController
             $query->where('parent_id', null);
         }
 
+        $query->orderBy('id', request('sort'));
+
         $directories = $query->get();
 
         return $this->sendResponse($directories->toArray(), 'Directories retrieved successfully');
@@ -108,9 +110,11 @@ class DirectoryAPIController extends AppBaseController
     public function open_directory($id, Request $request)
     {
         $current_directory = \App\Models\Directory::find($id);
-        $directories = \App\Models\Directory::where('parent_id', $id)->get();
+        $directories = \App\Models\Directory::where('parent_id', $id);
+        $directories = $directories->orderBy('id', request('sort'));
+        $directories = $directories->get();
 
-        $medias = \App\Models\Media::where('directory_id', $id)->latest()->get();
+        $medias = \App\Models\Media::where('directory_id', $id)->orderBy('id', request('sort'))->get();
         $directory_medias = MediaResource::collection($medias);
 
         return DirectoryResource::collection($directories)->additional([
