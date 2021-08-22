@@ -87,7 +87,11 @@ class MediaAPIController extends AppBaseController
 
             $file = public_path("/uploads/medias/" . $copy_media->attachment);
             $destination = public_path("/uploads/medias/". $media->attachment);
-            \File::copy($file,$destination);
+
+            if(\File::exists($file)){
+                \File::copy($file,$destination);
+            }
+
 
             $media->directory_id  =  $paste_id ? $paste_id : null;
             $media->save();

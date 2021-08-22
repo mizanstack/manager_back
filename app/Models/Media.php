@@ -65,7 +65,11 @@ class Media extends Model
 
                 $file = public_path("/uploads/medias/" . $child->attachment);
                 $destination = public_path("/uploads/medias/". $copyied_file_name);
-                \File::copy($file,$destination);
+
+                if(\File::exists($file)){
+                    \File::copy($file,$destination);
+                }
+
 
                 $copyAsParent->attachment = $copyied_file_name;
                 $copyAsParent->save();
