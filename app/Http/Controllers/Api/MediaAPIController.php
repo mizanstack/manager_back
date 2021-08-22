@@ -26,8 +26,7 @@ class MediaAPIController extends AppBaseController
 
            
             // 'name' => 'required',
-            'attachment'  => 'required|mimes:'.env('FILE_UPLOAD_SUPPORT_TYPE').'|max:2000',
-            // 'name.*.files'    => 'required|mimes:jpeg,png,pdf|max:2048',
+            'attachment'  => 'required|mimes:'.env('FILE_UPLOAD_SUPPORT_TYPE').'|max:'.env('FILE_UPLOAD_MAX_SIZE').'',
        ],
        [
        ]);
@@ -45,8 +44,6 @@ class MediaAPIController extends AppBaseController
             $media->save();
 
             DB::commit();
-            // DB::rollBack();
-
             return response()->json(['status' => 'success', 'message' => 'Upload successfully']);
        }
        catch( \Execption $e ) {
