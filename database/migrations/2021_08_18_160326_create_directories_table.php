@@ -21,8 +21,8 @@ class CreateDirectoriesTable extends Migration
             $table->timestamps();
         });
 
-        $file = realpath(__DIR__.'/../catalogs/directories.sql');
-        DB::unprepared( file_get_contents($file) );
+        // $file = realpath(__DIR__.'/../catalogs/directories.sql');
+        // DB::unprepared( file_get_contents($file) );
     }
 
     /**

@@ -44,7 +44,7 @@ class DirectoryAPIController extends AppBaseController
         $query->where('name', 'like', '%'.request('search').'%');
         $query->orderBy('id', request('sort'));
 
-        $directories = $query->paginate(1);
+        $directories = $query->paginate(15);
 
         return DirectoryResource::collection($directories);
     }
@@ -93,15 +93,10 @@ class DirectoryAPIController extends AppBaseController
 
             $paste_directory = new Directory;
 
-
             if($copy_directory['parent_id'] == $paste_id){
                 // current directory
                 $copy_directory['name'] = $copy_directory['name'] . ' Copy';
             }
-
-            // $copy_directory['name'] = $copy_directory['parent_id'] ? $copy_directory['name'] : $copy_directory['name'] . ' Copy';
-
-
 
             $copy_directory['parent_id'] = $paste_id ? $paste_id : null;
             $created = $paste_directory->create($copy_directory);
@@ -224,8 +219,8 @@ class DirectoryAPIController extends AppBaseController
                 $directory->slug = \Illuminate\Support\Str::slug($request->name);
                 $directory->save();
             }
-            return $this->sendResponse($directory->toArray(), 'Directory saved successfully'); 
             DB::commit();
+            return $this->sendResponse($directory->toArray(), 'Directory saved successfully'); 
 
         } catch (\Throwable $e) {
             DB::rollback();
