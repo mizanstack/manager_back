@@ -13,7 +13,6 @@ use Illuminate\Http\Request;
 |
 */
 
-Route::post('register', 'Api\AuthController@register');
 Route::post('login', 'Api\AuthController@login');
 Route::get('logout', 'Api\AuthController@logout');
 
@@ -30,23 +29,23 @@ Route::group(['prefix' => '', 'middleware' => ['jwt.verify']], function () {
 	Route::get('open-directory/{id}', 'Api\DirectoryAPIController@open_directory');
 
 	// folder named as directory
-	Route::post('save-folder', 'Api\DirectoryAPIController@save_folder');
-	Route::post('update-folder/{id}', 'Api\DirectoryAPIController@update_folder');
+
+	Route::get('copy-folder/{id}/{paste_id?}', 'Api\DirectoryAPIController@copy_folder');
+	Route::get('cut-folder/{id}/{paste_id?}', 'Api\DirectoryAPIController@cut_folder');
 	Route::post('delete-folder/{id}', 'Api\DirectoryAPIController@destroy');
+	Route::post('update-folder/{id}', 'Api\DirectoryAPIController@update_folder');
+	Route::post('save-folder', 'Api\DirectoryAPIController@save_folder');
+
+	Route::get('copy-media/{id}/{paste_id?}', 'Api\MediaAPIController@copy_media');
+	Route::get('cut-media/{id}/{paste_id?}', 'Api\MediaAPIController@cut_media');
+	Route::post('delete-media/{id}', 'Api\MediaAPIController@destroy');
 
 
 	Route::post('upload-files', 'Api\MediaAPIController@upload_files');
-
-    // Route::resource('directories', 'Api\DirectoryAPIController');
-    // Route::resource('media', 'Api\MediaAPIController');
+	Route::get('nested-directories', 'Api\DirectoryAPIController@nested_directories');
+	
 });
 
 
-Route::get('nested-directories', 'Api\DirectoryAPIController@nested_directories');
 
 
-Route::get('copy-folder/{id}/{paste_id?}', 'Api\DirectoryAPIController@copy_folder');
-Route::get('cut-folder/{id}/{paste_id?}', 'Api\DirectoryAPIController@cut_folder');
-
-Route::get('copy-media/{id}/{paste_id?}', 'Api\DirectoryAPIController@copy_media');
-Route::get('cut-media/{id}/{paste_id?}', 'Api\DirectoryAPIController@cut_media');

@@ -47,4 +47,13 @@ function takeExt($path){
 
 }
 
+function add_text_before_ext($text='', $name_with_extention){
+	$out = removeExt($name_with_extention) . $text;
+	$ext_name = takeExt($name_with_extention);
+	$out .=  $ext_name ? '.' . $ext_name : '';
+	return $out;
+}
+
+
+
 ?>

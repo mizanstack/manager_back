@@ -61,8 +61,7 @@ class Media extends Model
                 $copyAsParent->name = $child->name;
 
 
-                $copyied_file_name = removeExt($child->attachment) . '_copy' . '.' . takeExt($child->attachment);
-
+                $copyied_file_name = add_text_before_ext($text='_copy', $child->attachment);
 
                 $file = public_path("/uploads/medias/" . $child->attachment);
                 $destination = public_path("/uploads/medias/". $copyied_file_name);

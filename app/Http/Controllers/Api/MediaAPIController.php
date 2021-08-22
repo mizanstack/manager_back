@@ -44,17 +44,6 @@ class MediaAPIController extends AppBaseController
             $media->attachment  =  $media->uploadFileVue('attachment', 'media_', 'uploads/medias/');
             $media->save();
 
-
-            // if($request->award_status){
-            //     foreach ($request->award_list as $index => $award) {
-            //         \App\Models\mediaAward::create([
-            //             'media_id' => $media->id,
-            //             'awcertificate' => $media->uploadFileVue(request('award_list')[$index]['awcertificate'], $media->name . '_awcertificate', 'uploads/awcertificate/', true),
-            //             'status' => 1,
-            //         ]);
-            //     }
-            // }
-
             DB::commit();
             // DB::rollBack();
 
@@ -65,10 +54,89 @@ class MediaAPIController extends AppBaseController
 
             return response()->json(['status' => 'error', 'message' => 'Something wrong']);
        }
-
-
-
     }
+
+
+    /**
+     * Copy Media.
+     * GET/Media
+     *
+     * @param Request $request
+     * @return Response
+     */
+
+    public function copy_media($id, $paste_id=null){
+
+        if($paste_id == null){
+            return $this->sendError('You can not paste media on root directory');
+        }
+
+        DB::beginTransaction();
+
+        try {
+            $copy_media = Media::find($id);
+
+            $media = new Media;
+
+            if($copy_media->directory_id == $paste_id){
+                // same directory
+                $media->name = add_text_before_ext($text='_copy', $copy_media->name);
+            } else {
+                // another directory
+                $media->name = $copy_media->name;
+            }
+
+            $media->attachment = add_text_before_ext($text='_copy', $copy_media->attachment);
+
+            $file = public_path("/uploads/medias/" . $copy_media->attachment);
+            $destination = public_path("/uploads/medias/". $media->attachment);
+            \File::copy($file,$destination);
+
+            $media->directory_id  =  $paste_id ? $paste_id : null;
+            $media->save();
+
+            DB::commit();
+            return $this->sendResponse([], 'Copy Media Successfully');
+
+        } catch (\Throwable $e) {
+            DB::rollback();
+            return $this->sendError($e->getMessage());
+        }
+        
+    }
+
+
+    /**
+     * Cut Media.
+     * GET/Media
+     *
+     * @param Request $request
+     * @return Response
+     */
+
+    public function cut_media($id, $paste_id=null){
+
+        if($paste_id == null){
+            return $this->sendError('You can not paste media on root directory');
+        }
+
+        DB::beginTransaction();
+        try {
+            $cut_media = Media::find($id);
+            $cut_media->directory_id = $paste_id;
+            $cut_media->save();
+            DB::commit();
+            return $this->sendResponse([], 'Media Moved Successfully');
+
+        } catch (\Throwable $e) {
+            DB::rollback();
+            return $this->sendError($e->getMessage());
+        }
+        
+    }
+
+
+
 
     public function destroy($id)
     {
@@ -77,6 +145,11 @@ class MediaAPIController extends AppBaseController
 
         if (empty($media)) {
             return $this->sendError('Media not found');
+        }
+
+        $file = public_path("/uploads/medias/" . $media->attachment);
+        if (\File::exists($file)) { // unlink or remove previous image from folder
+            unlink($file);
         }
 
         $media->delete();
