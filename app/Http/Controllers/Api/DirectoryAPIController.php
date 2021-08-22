@@ -19,6 +19,38 @@ use DB;
 
 class DirectoryAPIController extends AppBaseController
 {
+
+    
+     /**
+     * Display a search of the Directory.
+     * GET|HEAD /search directories and files
+     *
+     * @param Request $request
+     * @return Response
+     */
+
+
+    public function get_search_data(Request $request)
+    {
+
+        $query = Directory::query();
+
+        if ($request->get('parent_id')) {
+            $query->where('parent_id', $request->get('parent_id'));
+        } else {
+            $query->where('parent_id', null);
+        }
+
+        $query->where('name', 'like', '%'.request('search').'%');
+        $query->orderBy('id', request('sort'));
+
+        $directories = $query->paginate(1);
+
+        return DirectoryResource::collection($directories);
+    }
+
+
+
     /**
      * Display a listing of the Directory.
      * GET|HEAD /directories
@@ -38,9 +70,11 @@ class DirectoryAPIController extends AppBaseController
 
         $query->orderBy('id', request('sort'));
 
-        $directories = $query->get();
+        $directories = $query->paginate(50);
 
-        return $this->sendResponse($directories->toArray(), 'Directories retrieved successfully');
+        return DirectoryResource::collection($directories);
+
+        // return $this->sendResponse($directories->toArray(), 'Directories retrieved successfully');
     }
 
 
@@ -58,7 +92,17 @@ class DirectoryAPIController extends AppBaseController
             $copy_directory = Directory::find($id)->toArray();
 
             $paste_directory = new Directory;
-            $copy_directory['name'] = $copy_directory['parent_id'] ? $copy_directory['name'] : $copy_directory['name'] . ' Copy';
+
+
+            if($copy_directory['parent_id'] == $paste_id){
+                // current directory
+                $copy_directory['name'] = $copy_directory['name'] . ' Copy';
+            }
+
+            // $copy_directory['name'] = $copy_directory['parent_id'] ? $copy_directory['name'] : $copy_directory['name'] . ' Copy';
+
+
+
             $copy_directory['parent_id'] = $paste_id ? $paste_id : null;
             $created = $paste_directory->create($copy_directory);
 

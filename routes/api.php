@@ -44,6 +44,11 @@ Route::group(['prefix' => '', 'middleware' => ['jwt.verify']], function () {
 	Route::post('upload-files', 'Api\MediaAPIController@upload_files');
 	Route::get('nested-directories', 'Api\DirectoryAPIController@nested_directories');
 	
+	Route::get('get-search-data', 'Api\DirectoryAPIController@get_search_data');
+
+
+	
+	
 });
 
 
